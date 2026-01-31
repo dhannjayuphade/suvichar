@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <title>सुविचार</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: rgba(0,0,0,0.4);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .quote {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        button {
+            background: #22c55e;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        .follow-btn {
+            margin-top: 30px;
+            background: #3b5998;
+            color: white;
+            border-radius: 8px;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .follow-btn:hover {
+            background: #8a3ab9;
+        }
+
+        footer {
+            margin-top: 25px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>🌼 सुविचार 🌼</h1>
+    <div class="quote" id="quote">
+        "स्वतःवर विश्वास ठेवा, यश नक्की मिळते."
+    </div>
+    <button onclick="changeQuote()">next</button>
+
+    <a href="https://www.instagram.com/dhannjayuphade?igsh=YzljYTk1ODg3Zg==" target="_blank" class="follow-btn">Instagram मध्ये Follow करा</a>
+
+    <footer>
+        <p> - <strong>Dhannjay uphade</strong> -</p>
+    </footer>
+</div>
+
+<script>
+    const quotes = [
+        "स्वतःवर विश्वास ठेवा, यश नक्की मिळते.",
+        "आजचा संघर्ष उद्याच्या यशाची तयारी असते.",
+        "कठीण वेळेत संयम ठेवा, वेळ बदलतो.",
+        "सकारात्मक विचार हेच खरे सामर्थ्य आहे.",
+        "मेहनत कधीच वाया जात नाही."
+    ];
+
+    function changeQuote() {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        document.getElementById("quote").innerText = quotes[randomIndex];
+    }
+</script>
+
+</body>
+</html>
