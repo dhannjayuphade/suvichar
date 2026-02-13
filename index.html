@@ -64,6 +64,15 @@ welcome <!DOCTYPE html>
 .dark-mode a {
   color:#4fc3f7;
 }
+    <style>
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+a[style*="position:fixed"] {
+  animation: bounce 2s infinite;
+}
+</style>
   </style>
 </head>
 
@@ -153,5 +162,21 @@ function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
 }
     </script>
+  <a href="https://chat.whatsapp.com/EKjuiqqvqBNGtPCYrRSPad"
+   target="_blank"
+   style="
+   position:fixed;
+   bottom:20px;
+   right:20px;
+   background:#25D366;
+   color:white;
+   padding:15px;
+   border-radius:50%;
+   font-size:22px;
+   text-decoration:none;
+   box-shadow:0 4px 10px rgba(0,0,0,0.3);
+   z-index:999;">
+   💬
+  </a>
 </body>
 </html>
