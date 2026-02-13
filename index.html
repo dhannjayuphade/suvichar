@@ -55,12 +55,25 @@ welcome <!DOCTYPE html>
       opacity: 0.9;
     }
   </style>
+  <style>
+.dark-mode {
+  background-color:#121212;
+  color:white;
+}
+
+.dark-mode a {
+  color:#4fc3f7;
+}
+  </style>
 </head>
 
 <body>
 
   <h1>✨ Suvichar by Dhannjay Uphade ✨</h1>
-
+<button onclick="toggleDarkMode()" 
+        style="position:fixed; top:15px; right:15px; padding:8px 12px; border:none; border-radius:20px; cursor:pointer;">
+   🌙
+</button>
   <!-- Social / Contact Buttons -->
   <div>
     <a class="follow-btn" href="https://www.instagram.com/dhannjayuphade" target="_blank">Follow on Instagram</a>
@@ -135,6 +148,10 @@ welcome <!DOCTYPE html>
   <footer>
     © 2026 Dhannjay Uphade
   </footer>
-
+<script>
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+}
+    </script>
 </body>
 </html>
