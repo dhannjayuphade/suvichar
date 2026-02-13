@@ -154,6 +154,46 @@ a[style*="position:fixed"] {
 </a>
 </div>
          <h1> Thank you 💕 </h1>
+  <!-- Visitor Counter -->
+<div style="text-align:center; margin-top:50px;">
+  <h3>👀 Total Visitors: <span id="visitor-count">0</span></h3>
+</div>
+
+<script>
+fetch("https://api.countapi.xyz/hit/dhannjay2026/mainpage")
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("visitor-count").innerText = data.value;
+  })
+  .catch(error => {
+    document.getElementById("visitor-count").innerText = "Error";
+  });
+</script>
+  <div style="text-align:center; margin-top:50px; padding:20px;">
+  <h2>🏆 My Achievements</h2>
+
+  <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-top:20px;">
+
+    <div style="background:#f5f5f5; padding:20px; border-radius:10px; width:180px;">
+      <h3>🎥</h3>
+      <p><strong>1K+</strong></p>
+      <p>YouTube Subscribers</p>
+    </div>
+
+    <div style="background:#f5f5f5; padding:20px; border-radius:10px; width:180px;">
+      <h3>👀</h3>
+      <p><strong>Growing</strong></p>
+      <p>Website Visitors</p>
+    </div>
+
+    <div style="background:#f5f5f5; padding:20px; border-radius:10px; width:180px;">
+      <h3>📚</h3>
+      <p><strong>500+</strong></p>
+      <p>GK Quiz Participants</p>
+    </div>
+
+  </div>
+  </div>
   <footer>
     © 2026 Dhannjay Uphade
   </footer>
