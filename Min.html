@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mini Minecraft</title>
+<style>
+  body {
+    margin: 0;
+    background: #87ceeb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  #game {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    grid-template-rows: repeat(10, 40px);
+    gap: 1px;
+    background: #333;
+  }
+  .block {
+    width: 40px;
+    height: 40px;
+    background: #654321; /* dirt block */
+  }
+  .player {
+    background: #ff0; /* yellow player */
+  }
+  .grass {
+    background: #0f0;
+  }
+  .stone {
+    background: #888;
+  }
+</style>
+</head>
+<body>
+
+<div id="game"></div>
+
+<script>
+const rows = 10;
+const cols = 10;
+const game = document.getElementById('game');
+
+// Create grid
+let grid = [];
+for (let r = 0; r < rows; r++) {
+  grid[r] = [];
+  for (let c = 0; c < cols; c++) {
+    const cell = document.createElement('div');
+    cell.classList.add('block');
+    // Random blocks
+    const rand = Math.random();
+    if (rand < 0.2) cell.classList.add('stone');
+    else if (rand < 0.4) cell.classList.add('grass');
+    game.appendChild(cell);
+    grid[r][c] = cell;
+  }
+}
+
+// Player position
+let player = { x: 0, y: 0 };
+grid[player.y][player.x].classList.add('player');
+
+// Move player
+document.addEventListener('keydown', e => {
+  grid[player.y][player.x].classList.remove('player');
+  if (e.key === 'ArrowUp' && player.y > 0) player.y--;
+  if (e.key === 'ArrowDown' && player.y < rows - 1) player.y++;
+  if (e.key === 'ArrowLeft' && player.x > 0) player.x--;
+  if (e.key === 'ArrowRight' && player.x < cols - 1) player.x++;
+  grid[player.y][player.x].classList.add('player');
+});
+
+// Place/break blocks
+document.addEventListener('click', e => {
+  const index = Array.from(game.children).indexOf(e.target);
+  if (index === -1) return;
+  const x = index % cols;
+  const y = Math.floor(index / cols);
+
+  // Break block
+  if (!e.shiftKey) {
+    e.target.className = 'block';
+  } else {
+    // Place stone
+    e.target.className = 'block stone';
+  }
+});
+</script>
+
+</body>
+  </html>
