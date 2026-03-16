@@ -1,96 +1,266 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Mini Minecraft</title>
+<title>VoxelCraft</title>
+
 <style>
-  body {
-    margin: 0;
-    background: #87ceeb;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-  }
-  #game {
-    display: grid;
-    grid-template-columns: repeat(10, 40px);
-    grid-template-rows: repeat(10, 40px);
-    gap: 1px;
-    background: #333;
-  }
-  .block {
-    width: 40px;
-    height: 40px;
-    background: #654321; /* dirt block */
-  }
-  .player {
-    background: #ff0; /* yellow player */
-  }
-  .grass {
-    background: #0f0;
-  }
-  .stone {
-    background: #888;
-  }
-</style>
-</head>
-<body>
+body{margin:0;overflow:hidden;background:black}
 
-<div id="game"></div>
-
-<script>
-const rows = 10;
-const cols = 10;
-const game = document.getElementById('game');
-
-// Create grid
-let grid = [];
-for (let r = 0; r < rows; r++) {
-  grid[r] = [];
-  for (let c = 0; c < cols; c++) {
-    const cell = document.createElement('div');
-    cell.classList.add('block');
-    // Random blocks
-    const rand = Math.random();
-    if (rand < 0.2) cell.classList.add('stone');
-    else if (rand < 0.4) cell.classList.add('grass');
-    game.appendChild(cell);
-    grid[r][c] = cell;
-  }
+#crosshair{
+position:fixed;
+top:50%;
+left:50%;
+width:8px;
+height:8px;
+margin-left:-4px;
+margin-top:-4px;
+background:white;
 }
 
-// Player position
-let player = { x: 0, y: 0 };
-grid[player.y][player.x].classList.add('player');
+#info{
+position:fixed;
+top:10px;
+left:10px;
+color:white;
+font-family:Arial;
+}
+</style>
 
-// Move player
-document.addEventListener('keydown', e => {
-  grid[player.y][player.x].classList.remove('player');
-  if (e.key === 'ArrowUp' && player.y > 0) player.y--;
-  if (e.key === 'ArrowDown' && player.y < rows - 1) player.y++;
-  if (e.key === 'ArrowLeft' && player.x > 0) player.x--;
-  if (e.key === 'ArrowRight' && player.x < cols - 1) player.x++;
-  grid[player.y][player.x].classList.add('player');
-});
+</head>
 
-// Place/break blocks
-document.addEventListener('click', e => {
-  const index = Array.from(game.children).indexOf(e.target);
-  if (index === -1) return;
-  const x = index % cols;
-  const y = Math.floor(index / cols);
+<body>
 
-  // Break block
-  if (!e.shiftKey) {
-    e.target.className = 'block';
-  } else {
-    // Place stone
-    e.target.className = 'block stone';
-  }
-});
+<div id="crosshair"></div>
+
+<div id="info">
+WASD = Move<br>
+Click = Place Block<br>
+Right Click = Break Block
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
+<script>
+
+let scene=new THREE.Scene()
+
+let camera=new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+)
+
+let renderer=new THREE.WebGLRenderer()
+
+renderer.setSize(window.innerWidth,window.innerHeight)
+
+document.body.appendChild(renderer.domElement)
+
+scene.background=new THREE.Color(0x87CEEB)
+
+let sun=new THREE.DirectionalLight(0xffffff,1)
+
+sun.position.set(50,100,50)
+
+scene.add(sun)
+
+let geometry=new THREE.BoxGeometry(1,1,1)
+
+let materials={
+grass:new THREE.MeshLambertMaterial({color:0x4CAF50}),
+dirt:new THREE.MeshLambertMaterial({color:0x8B4513}),
+stone:new THREE.MeshLambertMaterial({color:0x777777})
+}
+
+let blocks=[]
+
+function addBlock(x,y,z,type){
+
+let cube=new THREE.Mesh(geometry,materials[type])
+
+cube.position.set(x,y,z)
+
+scene.add(cube)
+
+blocks.push(cube)
+
+}
+
+function generateTerrain(){
+
+for(let x=-30;x<30;x++){
+for(let z=-30;z<30;z++){
+
+let height=Math.floor(Math.random()*4+1)
+
+for(let y=0;y<height;y++){
+
+if(y==height-1){
+addBlock(x,y,z,"grass")
+}else{
+addBlock(x,y,z,"dirt")
+}
+
+}
+
+}
+
+}
+
+}
+
+generateTerrain()
+
+camera.position.set(0,5,10)
+
+let keys={}
+
+document.addEventListener("keydown",e=>{
+keys[e.key]=true
+})
+
+document.addEventListener("keyup",e=>{
+keys[e.key]=false
+})
+
+function movePlayer(){
+
+let speed=0.15
+
+if(keys["w"]) camera.position.z-=speed
+if(keys["s"]) camera.position.z+=speed
+if(keys["a"]) camera.position.x-=speed
+if(keys["d"]) camera.position.x+=speed
+
+}
+
+let raycaster=new THREE.Raycaster()
+
+window.addEventListener("click",()=>{
+
+raycaster.setFromCamera(new THREE.Vector2(0,0),camera)
+
+let hit=raycaster.intersectObjects(blocks)
+
+if(hit.length>0){
+
+let p=hit[0].object.position
+
+addBlock(p.x,p.y+1,p.z,"dirt")
+
+}
+
+})
+
+window.addEventListener("contextmenu",e=>{
+
+e.preventDefault()
+
+raycaster.setFromCamera(new THREE.Vector2(0,0),camera)
+
+let hit=raycaster.intersectObjects(blocks)
+
+if(hit.length>0){
+
+let b=hit[0].object
+
+scene.remove(b)
+
+blocks.splice(blocks.indexOf(b),1)
+
+}
+
+})
+
+/* Day Night Cycle */
+
+let time=0
+
+function dayNight(){
+
+time+=0.002
+
+let brightness=(Math.sin(time)+1)/2
+
+sun.intensity=brightness+0.2
+
+}
+
+/* Rain Weather */
+
+function rain(){
+
+if(Math.random()<0.1){
+
+let drop=new THREE.Mesh(
+new THREE.BoxGeometry(0.05,0.5,0.05),
+new THREE.MeshBasicMaterial({color:0x66aaff})
+)
+
+drop.position.set(
+Math.random()*60-30,
+10,
+Math.random()*60-30
+)
+
+scene.add(drop)
+
+}
+
+}
+
+/* Simple Mob */
+
+let mob=new THREE.Mesh(
+new THREE.BoxGeometry(1,1,1),
+new THREE.MeshLambertMaterial({color:0xffffff})
+)
+
+mob.position.set(5,3,5)
+
+scene.add(mob)
+
+function updateMob(){
+
+mob.position.x+=Math.sin(Date.now()*0.001)*0.02
+
+}
+
+/* Save World */
+
+function saveWorld(){
+
+let data=blocks.map(b=>({
+x:b.position.x,
+y:b.position.y,
+z:b.position.z
+}))
+
+localStorage.setItem("voxelWorld",JSON.stringify(data))
+
+}
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+movePlayer()
+
+dayNight()
+
+rain()
+
+updateMob()
+
+renderer.render(scene,camera)
+
+}
+
+animate()
+
 </script>
 
 </body>
-  </html>
+</html>
