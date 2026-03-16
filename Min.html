@@ -2,10 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>VoxelCraft</title>
+<title>Mobile BlockCraft</title>
 
 <style>
-body{margin:0;overflow:hidden;background:black}
+
+body{
+margin:0;
+overflow:hidden;
+font-family:Arial;
+background:black;
+}
 
 #crosshair{
 position:fixed;
@@ -13,30 +19,39 @@ top:50%;
 left:50%;
 width:8px;
 height:8px;
+background:white;
 margin-left:-4px;
 margin-top:-4px;
-background:white;
 }
 
-#info{
+#controls{
 position:fixed;
-top:10px;
-left:10px;
-color:white;
-font-family:Arial;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+display:grid;
+grid-template-columns:60px 60px 60px;
+gap:10px;
 }
-</style>
 
+button{
+width:60px;
+height:60px;
+font-size:20px;
+}
+
+</style>
 </head>
 
 <body>
 
 <div id="crosshair"></div>
 
-<div id="info">
-WASD = Move<br>
-Click = Place Block<br>
-Right Click = Break Block
+<div id="controls">
+<button onclick="move('up')">⬆</button>
+<button onclick="move('left')">⬅</button>
+<button onclick="move('right')">➡</button>
+<button onclick="move('down')">⬇</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
@@ -62,23 +77,20 @@ scene.background=new THREE.Color(0x87CEEB)
 
 let sun=new THREE.DirectionalLight(0xffffff,1)
 
-sun.position.set(50,100,50)
+sun.position.set(20,50,20)
 
 scene.add(sun)
 
 let geometry=new THREE.BoxGeometry(1,1,1)
 
-let materials={
-grass:new THREE.MeshLambertMaterial({color:0x4CAF50}),
-dirt:new THREE.MeshLambertMaterial({color:0x8B4513}),
-stone:new THREE.MeshLambertMaterial({color:0x777777})
-}
+let grass=new THREE.MeshLambertMaterial({color:0x4CAF50})
+let dirt=new THREE.MeshLambertMaterial({color:0x8B4513})
 
 let blocks=[]
 
-function addBlock(x,y,z,type){
+function addBlock(x,y,z,mat){
 
-let cube=new THREE.Mesh(geometry,materials[type])
+let cube=new THREE.Mesh(geometry,mat)
 
 cube.position.set(x,y,z)
 
@@ -88,19 +100,19 @@ blocks.push(cube)
 
 }
 
-function generateTerrain(){
+function generateWorld(){
 
-for(let x=-30;x<30;x++){
-for(let z=-30;z<30;z++){
+for(let x=-20;x<20;x++){
+for(let z=-20;z<20;z++){
 
-let height=Math.floor(Math.random()*4+1)
+let h=Math.floor(Math.random()*3+1)
 
-for(let y=0;y<height;y++){
+for(let y=0;y<h;y++){
 
-if(y==height-1){
-addBlock(x,y,z,"grass")
+if(y==h-1){
+addBlock(x,y,z,grass)
 }else{
-addBlock(x,y,z,"dirt")
+addBlock(x,y,z,dirt)
 }
 
 }
@@ -111,28 +123,18 @@ addBlock(x,y,z,"dirt")
 
 }
 
-generateTerrain()
+generateWorld()
 
 camera.position.set(0,5,10)
 
-let keys={}
+function move(dir){
 
-document.addEventListener("keydown",e=>{
-keys[e.key]=true
-})
+let speed=0.5
 
-document.addEventListener("keyup",e=>{
-keys[e.key]=false
-})
-
-function movePlayer(){
-
-let speed=0.15
-
-if(keys["w"]) camera.position.z-=speed
-if(keys["s"]) camera.position.z+=speed
-if(keys["a"]) camera.position.x-=speed
-if(keys["d"]) camera.position.x+=speed
+if(dir=="up") camera.position.z-=speed
+if(dir=="down") camera.position.z+=speed
+if(dir=="left") camera.position.x-=speed
+if(dir=="right") camera.position.x+=speed
 
 }
 
@@ -148,7 +150,7 @@ if(hit.length>0){
 
 let p=hit[0].object.position
 
-addBlock(p.x,p.y+1,p.z,"dirt")
+addBlock(p.x,p.y+1,p.z,dirt)
 
 }
 
@@ -174,8 +176,6 @@ blocks.splice(blocks.indexOf(b),1)
 
 })
 
-/* Day Night Cycle */
-
 let time=0
 
 function dayNight(){
@@ -184,11 +184,9 @@ time+=0.002
 
 let brightness=(Math.sin(time)+1)/2
 
-sun.intensity=brightness+0.2
+sun.intensity=brightness+0.3
 
 }
-
-/* Rain Weather */
 
 function rain(){
 
@@ -200,9 +198,9 @@ new THREE.MeshBasicMaterial({color:0x66aaff})
 )
 
 drop.position.set(
-Math.random()*60-30,
+Math.random()*40-20,
 10,
-Math.random()*60-30
+Math.random()*40-20
 )
 
 scene.add(drop)
@@ -211,48 +209,13 @@ scene.add(drop)
 
 }
 
-/* Simple Mob */
-
-let mob=new THREE.Mesh(
-new THREE.BoxGeometry(1,1,1),
-new THREE.MeshLambertMaterial({color:0xffffff})
-)
-
-mob.position.set(5,3,5)
-
-scene.add(mob)
-
-function updateMob(){
-
-mob.position.x+=Math.sin(Date.now()*0.001)*0.02
-
-}
-
-/* Save World */
-
-function saveWorld(){
-
-let data=blocks.map(b=>({
-x:b.position.x,
-y:b.position.y,
-z:b.position.z
-}))
-
-localStorage.setItem("voxelWorld",JSON.stringify(data))
-
-}
-
 function animate(){
 
 requestAnimationFrame(animate)
 
-movePlayer()
-
 dayNight()
 
 rain()
-
-updateMob()
 
 renderer.render(scene,camera)
 
